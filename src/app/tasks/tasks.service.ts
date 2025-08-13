@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Task } from './task.model';
+import { Task, TaskStatus } from './task.model';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +7,7 @@ import { Task } from './task.model';
 export class TasksService {
   private tasks = signal<Task[]>([]);
   allTasks = this.tasks.asReadonly();
-  
+
   constructor() { 
     console.log('Task service constructed...');
   }
@@ -16,6 +16,18 @@ export class TasksService {
     const newTask:Task = {...taskData, id:Math.random().toString(),status:'OPEN'};
     this.tasks.update((oldTasks) => {
       return [...oldTasks, newTask];
+    })
+  }
+
+  updateTaskStatus(taskId:string, newStatus:TaskStatus){
+    this.tasks.update((oldTasks)=>{
+      return oldTasks.map((task)=>{
+        if(task.id ===taskId){
+          return {...task,status:newStatus};
+        }else{
+          return task;
+        }
+      })
     })
   }
 }
